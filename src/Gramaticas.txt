@@ -1,0 +1,13 @@
+Recursion
+
+S->aS/AB/AC
+A->aA/&
+B->bB/bs
+C->cC/&
+
+Lambda
+
+S->ACA
+A->aAa/B/C
+B->bB/b
+C->cC/&

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Regla {
     private String nombre;
@@ -35,5 +36,11 @@ public class Regla {
             this.transiciones.add(new Transicion(element));
         }
 
+    }
+
+    public void addTransicion(Set<String> newTransicones){
+        for(String trans : newTransicones) {
+            this.transiciones.add(new Transicion(trans));
+        }
     }
 }

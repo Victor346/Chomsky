@@ -89,14 +89,61 @@ public class Main {
         while ( !(NULL.equals(PREV))){
             PREV = NULL;
             for(String key : gramatica.keySet()){
+
                 for(Transicion trans : gramatica.get(key).getTransiciones()) {
-                    
+
+                    Set<String> temp = new HashSet<String>();
+
+
+                    for (Character car : trans.getVariables()){
+                        temp.add(car.toString());
+                    }
+
+                    if(PREV.equals(temp)){
+
+                        NULL.add(key);
+                    }
+
                 }
             }
         }
 
+        System.out.println();
+
+        System.out.print("NULL = ");
 
         System.out.println(NULL);
+
+        ///
+
+        for(String key : gramatica.keySet()){
+            Set<String> nuevasTransiciones = new HashSet<>();
+
+            for(Transicion trans: gramatica.get(key).getTransiciones()){
+                    Set<String> NEW = new HashSet<>();
+                    List<String> temporal = Arrays.asList(trans.getProduccion());
+
+                    String[] superTemp = temporal.get(0).split("");
+                    List<String> pera = new ArrayList<>(Arrays.asList(temporal.get(0).split("")));
+                    for(int i=0; i < superTemp.length; i++){
+                        if(NULL.contains(superTemp[i])){
+
+                            pera.remove(i);
+
+
+                            System.out.println(pera);
+
+                            pera = Arrays.asList(superTemp);
+                        }
+
+
+                    }
+
+            }
+
+        }
+
+
 
 
 
