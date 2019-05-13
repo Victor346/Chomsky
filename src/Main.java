@@ -127,14 +127,10 @@ public class Main {
 
                     ULT.add(trans.getProduccion());
 
-
                     while (ULT.size()>0){
-
                         for (String tempProd : ULT){
 
-
                             String[] temp = tempProd.split("");
-
 
                             for (int i = 0;i<temp.length;i++){
 
@@ -144,31 +140,21 @@ public class Main {
 
 
                                 }
-
-
                             }
-
-
-
-
                         }
-
 
                         ULT.clear();
                         ULT.addAll(NEWtemp);
                         NEW.addAll(NEWtemp);
                         NEWtemp.clear();
 
-
-
                     }
                     nuevasTransiciones.addAll(NEW);
-
 
             }
 
             ///Ya que se obtuvieron todas las nuevas transicones se deben de agregar a la regla
-            System.out.println("Nuevas Transiciones:   "+nuevasTransiciones);
+            //System.out.println("Nuevas Transiciones:   "+nuevasTransiciones);
 
             for(String transicion : nuevasTransiciones){
                 if(!transicion.equals("")){
@@ -186,6 +172,21 @@ public class Main {
         imprimirGramatica(gramatica);
 
         ///Eliminar reglas encadenadas
+
+        ///Se rea una copia del hashmap para almacenar las transiciones originales
+
+        HashMap<String, Regla> gramaticaCopia = new HashMap<>();
+        gramaticaCopia.putAll(gramatica);
+
+        
+
+
+
+
+
+
+
+
 
         ///Eliminar simbolos useless
 
