@@ -1,3 +1,6 @@
+import com.sun.source.doctree.StartElementTree;
+
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.io.File;
@@ -178,9 +181,62 @@ public class Main {
         HashMap<String, Regla> gramaticaCopia = new HashMap<>();
         gramaticaCopia.putAll(gramatica);
 
-        
+        gramatica.clear();
+        ///Crear los sets que requiere el algoritmo o vaciarlos para poder reusar el nombre
+
+        for(String key : gramaticaCopia.keySet()){
+            Set<String> CHAIN = new HashSet<>();
+            PREV.clear();
+            Set<String> NEW = new HashSet<>();
+            CHAIN.add(key);
+
+            while( !CHAIN.equals(PREV)){
+
+                NEW = restaSet(CHAIN, PREV);
+
+                PREV.clear();
+
+                PREV.addAll(CHAIN);
+
+                for (String B : NEW){
+                    for(Transicion trans : gramaticaCopia.get(B).getTransiciones()){
+                        if(trans.getVariables().length == 1){
+                            List<String > temp = new ArrayList<>();
+                            for(Character car : trans.getVariables()){
+                                temp.add(car.toString());
+                            }
+
+                            CHAIN.addAll(temp);
+
+                        }
+
+                    }
+
+                }
 
 
+            }
+            System.out.println(CHAIN);
+            ///Crear un array que contenga la union de las transiciones
+            Set<String> nuevasTrans = new HashSet<>();
+
+            for(String clave : CHAIN){
+                for(Transicion trans : gramaticaCopia.get(clave).getTransiciones()){
+                    if(!CHAIN.contains(trans.getProduccion())) {
+                        nuevasTrans.add(trans.getProduccion());
+                    }
+                }
+
+            }
+
+
+
+            gramatica.put(key, new Regla(key, nuevasTrans.toArray(new String[nuevasTrans.size()]) ));
+
+        }
+
+
+        imprimirGramatica(gramatica);
 
 
 
@@ -218,8 +274,8 @@ public class Main {
 
 
     ///Inicia sumSet
-    public static Set<Character> sumSet(Set<Character> setA, Set<Character> setB){
-        Set<Character> temp = new HashSet<>();
+    public static Set<String> sumSet(Set<String> setA, Set<String> setB){
+        Set<String> temp = new HashSet<>();
         temp.addAll(setA);
         temp.addAll(setB);
         return temp;
@@ -228,9 +284,9 @@ public class Main {
 
     /// Simula la resta de Set A menos Set B. Regresa un set que contiene los elementos de A excepto aquellos que esten
     /// en B.
-    public static Set<Character> restaSet(Set<Character> setA, Set<Character> setB){
-        Set<Character> temp = new HashSet<>(setA);
-        for(Character car: setB){
+    public static Set<String> restaSet(Set<String> setA, Set<String> setB){
+        Set<String> temp = new HashSet<>(setA);
+        for(String car: setB){
             if(temp.contains(car)){
                 temp.remove(car);
             }
@@ -251,6 +307,7 @@ public class Main {
                 System.out.print(trans.getProduccion() +"|");
             }
         }
+        System.out.println();
 
     }
     // Finaliza imprimirGramatica
