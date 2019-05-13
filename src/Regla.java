@@ -43,4 +43,18 @@ public class Regla {
             this.transiciones.add(new Transicion(trans));
         }
     }
+
+    public void addTransicion(String newTransicion){
+
+            this.transiciones.add(new Transicion(newTransicion));
+
+    }
+
+    public void eliminarLabda(){
+        for ( int i = 0; i < this.transiciones.size() ; i++){
+            if(this.transiciones.get(i).getLamba()){
+                this.transiciones.remove(i);
+            }
+        }
+    }
 }

@@ -118,34 +118,72 @@ public class Main {
 
         for(String key : gramatica.keySet()){
             Set<String> nuevasTransiciones = new HashSet<>();
+            gramatica.get(key).eliminarLabda();
 
             for(Transicion trans: gramatica.get(key).getTransiciones()){
                     Set<String> NEW = new HashSet<>();
-                    List<String> temporal = Arrays.asList(trans.getProduccion());
+                    Set<String> ULT = new HashSet<>();
+                    Set<String> NEWtemp = new HashSet<>();
 
-                    String[] superTemp = temporal.get(0).split("");
-                    List<String> pera = new ArrayList<>(Arrays.asList(temporal.get(0).split("")));
-                    for(int i=0; i < superTemp.length; i++){
-                        if(NULL.contains(superTemp[i])){
-
-                            pera.remove(i);
+                    ULT.add(trans.getProduccion());
 
 
-                            System.out.println(pera);
+                    while (ULT.size()>0){
 
-                            pera = Arrays.asList(superTemp);
+                        for (String tempProd : ULT){
+
+
+                            String[] temp = tempProd.split("");
+
+
+                            for (int i = 0;i<temp.length;i++){
+
+                                if(NULL.contains(temp[i])){
+                                    ///Crear metodo que regrese un string sin el character que esta en cierto indice
+                                    NEWtemp.add(eliminarCaracter(tempProd,i));
+
+
+                                }
+
+
+                            }
+
+
+
+
                         }
 
 
+                        ULT.clear();
+                        ULT.addAll(NEWtemp);
+                        NEW.addAll(NEWtemp);
+                        NEWtemp.clear();
+
+
+
                     }
+                    nuevasTransiciones.addAll(NEW);
+
+
+            }
+
+            ///Ya que se obtuvieron todas las nuevas transicones se deben de agregar a la regla
+            System.out.println("Nuevas Transiciones:   "+nuevasTransiciones);
+
+            for(String transicion : nuevasTransiciones){
+                if(!transicion.equals("")){
+                    gramatica.get(key).addTransicion(transicion);
+                }
 
             }
 
         }
 
+        gramatica.get(simboloInicial).addTransicion("&");
 
 
 
+        imprimirGramatica(gramatica);
 
         ///Eliminar reglas encadenadas
 
@@ -157,6 +195,26 @@ public class Main {
 
 
     }
+
+
+
+    ///Metodo para eliminar un caracter de un String de cierto indice
+
+    public static String eliminarCaracter(String palabra, int indice){
+        String temp = "";
+        StringBuilder sb = new StringBuilder();
+        char[] arrayTemp = palabra.toCharArray();
+        for(int i = 0; i< arrayTemp.length ;i++){
+            if(i!=indice) {
+                sb.append(arrayTemp[i]);
+            }
+        }
+
+        temp = sb.toString();
+
+        return temp;
+    }
+
 
     ///Inicia sumSet
     public static Set<Character> sumSet(Set<Character> setA, Set<Character> setB){
