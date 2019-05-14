@@ -1,6 +1,3 @@
-import com.sun.source.doctree.StartElementTree;
-
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.io.File;
@@ -65,7 +62,7 @@ public class Main {
             gramatica.put("S'", new Regla("S'", arrTemp));
             simboloInicial = "S'";
         }
-        System.out.println("");
+        System.out.println();
 
         imprimirGramatica(gramatica);
 
@@ -178,8 +175,7 @@ public class Main {
 
         ///Se rea una copia del hashmap para almacenar las transiciones originales
 
-        HashMap<String, Regla> gramaticaCopia = new HashMap<>();
-        gramaticaCopia.putAll(gramatica);
+        HashMap<String, Regla> gramaticaCopia = new HashMap<>(gramatica);
 
         gramatica.clear();
         ///Crear los sets que requiere el algoritmo o vaciarlos para poder reusar el nombre
