@@ -1,4 +1,7 @@
+import javax.sound.midi.Soundbank;
+import javax.swing.table.TableRowSorter;
 import java.io.FileNotFoundException;
+import java.sql.SQLOutput;
 import java.util.*;
 import java.io.File;
 
@@ -43,6 +46,8 @@ public class Main {
 
         imprimirGramatica(gramatica);
 
+
+
         ///Eliminar recursion en el Simbolo inicial
 
 
@@ -65,6 +70,9 @@ public class Main {
         System.out.println();
 
         imprimirGramatica(gramatica);
+
+
+
 
         ///Finaliza eliminar recursion inicial
 
@@ -165,7 +173,9 @@ public class Main {
 
         }
 
-        gramatica.get(simboloInicial).addTransicion("&");
+        if(NULL.size()!=0) {
+            gramatica.get(simboloInicial).addTransicion("&");
+        }
 
 
 
@@ -240,10 +250,306 @@ public class Main {
 
 
 
-        ///Eliminar simbolos useless
+        ///Eliminar simbolos
+
+        gramaticaCopia.clear();
+        gramaticaCopia.putAll(gramatica);
+
+
+        Set<String> TERM = new HashSet<>();
+        PREV.clear();
+
+        ///Encontrar todas las reglas que lleven a solo un terminal
+
+        for(String key : gramatica.keySet()){
+            for(Transicion trans : gramatica.get(key).getTransiciones()){
+                if(trans.getVariables().length == 0 && !trans.getProduccion().equals("&")){
+                    TERM.add(key);
+                }
+
+            }
+
+        }
+
+        while ( !PREV.equals(TERM)){
+            PREV.clear();
+            PREV.addAll(TERM);
+
+            for(String key : gramatica.keySet()){
+                for(Transicion trans : gramatica.get(key).getTransiciones()){
+                    List<String> listaTemporal = new ArrayList<>();
+                    for(Character car : trans.getVariables()){
+                        listaTemporal.add(car.toString());
+                    }
+
+                    if(PREV.containsAll(listaTemporal)){
+
+                        TERM.add(key);
+                    }
+                }
+            }
+
+
+        }
+
+        System.out.println("TERM="+TERM);
+
+        gramatica.clear();
+
+        for(String key : gramaticaCopia.keySet()){
+            if(TERM.contains(key)) {
+                Set<String> produccionesBuenas = new HashSet<>();
+
+                for (Transicion trans : gramaticaCopia.get(key).getTransiciones()) {
+                    List<String> listaTemporal = new ArrayList<>();
+                    for(Character car : trans.getVariables()){
+                        listaTemporal.add(car.toString());
+                    }
+                    if(TERM.containsAll(listaTemporal)){
+                        produccionesBuenas.add(trans.getProduccion());
+                    }
+                }
+
+
+                gramatica.put(key, new Regla(key, produccionesBuenas.toArray(new String[produccionesBuenas.size()])));
+
+            }
+        }
+
+        imprimirGramatica(gramatica);
+
+
+
+        ///Segunda mitad de Uselesss
+
+        Set<String> REACH = new HashSet<>();
+        PREV.clear();
+        Set<String> NEW = new HashSet<>();
+
+        REACH.add(simboloInicial);
+
+        while (!REACH.equals(PREV)){
+            NEW.clear();
+            NEW.addAll(restaSet(REACH,PREV));
+            PREV.clear();
+            PREV.addAll(REACH);
+
+            for (String variable : NEW){
+                for(Transicion trans : gramatica.get(variable).getTransiciones()){
+                    List<String> listaTemporal = new ArrayList<>();
+                    for(Character car : trans.getVariables()){
+                        listaTemporal.add(car.toString());
+                    }
+                    REACH.addAll(listaTemporal);
+                }
+            }
+
+        }
+
+        gramaticaCopia.clear();
+        gramaticaCopia.putAll(gramatica);
+
+        gramatica.clear();
+
+        System.out.println("REACH" + REACH);
+
+        for (String keyBuena : REACH){
+            List<String> produccionesTemp = new ArrayList<>();
+            for (Transicion trans : gramaticaCopia.get(keyBuena).getTransiciones()){
+                produccionesTemp.add(trans.getProduccion());
+            }
+
+            gramatica.put(keyBuena, new Regla(keyBuena, produccionesTemp.toArray(new String[produccionesTemp.size()])));
+        }
+
+        imprimirGramatica(gramatica);
+
+
+
 
 
         ///Hacer algoritmos de Chomsky
+
+        ///Remplacar final con sus versiones ' si se requiere
+
+        gramaticaCopia.clear();
+        gramaticaCopia.putAll(gramatica);
+        System.out.println();
+
+
+
+        Set<String> llavesOriginale = new HashSet<>();
+        llavesOriginale.addAll(gramatica.keySet());
+
+        gramatica.clear();
+
+        HashMap<String, String> diccEqui = new HashMap<>();
+
+        for (String key : gramaticaCopia.keySet()){
+
+            Set<String> produccionesBuenas = new HashSet<>();
+
+            for(Transicion trans : gramaticaCopia.get(key).getTransiciones()){
+
+                if(trans.getVariables().length>0 || trans.getFinales().length > 1){
+                    StringBuilder sb = new StringBuilder();
+                    char[] caracteres = trans.getProduccion().toCharArray();
+                    for (char caracter : caracteres){
+                        if(Character.isUpperCase(caracter)){
+                            sb.append(caracter);
+                        } else {
+
+                            ///nuevaTrans es el nombre de la nueva regla
+
+                            String nuevaTrans = "";
+                            String caracter2 = Character.toString(caracter);
+                            if (!diccEqui.keySet().contains(caracter2)) {
+                                do {
+                                    Random r = new Random();
+                                    StringBuilder sb2 = new StringBuilder();
+                                    String alphabet = "ABCDEFGHIJKLMNOPQRSUVWXYZ";
+                                    char nuevaTransTemp = alphabet.charAt(r.nextInt(alphabet.length()));
+                                    sb2.append(nuevaTransTemp);
+                                    nuevaTrans = sb2.toString();
+                                } while (llavesOriginale.contains(nuevaTrans));
+                                diccEqui.put(caracter2,nuevaTrans);
+
+                            } else {
+                                nuevaTrans = diccEqui.get(caracter2);
+                            }
+
+                                String[] nuevaProduccion = new String[1];
+                                nuevaProduccion[0] = caracter2;
+                                gramatica.put(nuevaTrans, new Regla(nuevaTrans, nuevaProduccion));
+                                llavesOriginale.add(nuevaTrans);
+
+
+                            sb.append(nuevaTrans);
+
+
+                        }
+                    }
+
+
+                    produccionesBuenas.add(sb.toString());
+
+
+                } else {
+                    produccionesBuenas.add(trans.getProduccion());
+                }
+
+            }
+
+
+
+            gramatica.put(key, new Regla(key, produccionesBuenas.toArray(new String[produccionesBuenas.size()])));
+
+        }
+
+        imprimirGramatica(gramatica);
+
+
+        gramaticaCopia.clear();
+        gramaticaCopia.putAll(gramatica);
+
+
+        ///Agregar T's
+
+        int numeroT = 1;
+        boolean estaListo = true;
+
+
+
+            gramaticaCopia.clear();
+            gramaticaCopia.putAll(gramatica);
+            gramatica.clear();
+
+            for ( String key : gramaticaCopia.keySet()){
+
+                List<String> produccionesBuenas = new ArrayList<>();
+
+                for (Transicion trans : gramaticaCopia.get(key).getTransiciones()){
+
+
+
+
+                    if(trans.getFinales().length>0 || trans.getVariables().length<3){
+
+                        produccionesBuenas.add(trans.getProduccion());
+                    } else {
+
+                        String origen = key;
+
+                        String[] letrasProduccion = trans.getProduccion().split("");
+
+
+                        String nuevaT = "T"+numeroT;
+                        numeroT++;
+
+                        int tamano = letrasProduccion.length-1;
+
+                        int apuntador =0;
+
+                        produccionesBuenas.add(letrasProduccion[apuntador]+nuevaT);
+                         apuntador++;
+
+                         origen = nuevaT;
+
+                        ///Mientras el restante de la regla no respete la forma normal crear nuevas reglas
+                        String[] cosaTemp = new String[1];
+
+                        while (tamano-apuntador>1){
+                            nuevaT = "T"+numeroT;
+                            numeroT++;
+                            cosaTemp[0] = letrasProduccion[apuntador]+nuevaT;
+                            gramatica.put(origen, new Regla(origen, cosaTemp));
+                            origen = nuevaT;
+                            apuntador++;
+
+
+                        }
+                        StringBuilder sb = new StringBuilder();
+                        while(apuntador<tamano+1){
+                            sb.append(letrasProduccion[apuntador]);
+                            apuntador++;
+                        }
+                        cosaTemp[0] = sb.toString();
+
+
+                        gramatica.put(origen, new Regla(origen, cosaTemp));
+
+
+
+
+
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+                }
+
+                gramatica.put(key, new Regla(key, produccionesBuenas.toArray( new String[produccionesBuenas.size()])));
+
+
+
+            }
+
+
+
+
+        System.out.println();
+        imprimirGramatica(gramatica);
+
+
 
 
 
