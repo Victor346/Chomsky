@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.*;
 
 public class Transicion {
     private String produccion;
@@ -7,22 +8,32 @@ public class Transicion {
     private Character[] variables;
     private Boolean lamba = false;
 
+
     public Transicion(String produccion){
         this.produccion = produccion;
         // Dividir los caracteres dependiendo de si son finales o variables
         List<Character> finTemp = new ArrayList<>();
         List<Character> varTemp = new ArrayList<>();
 
-        for (Character car: produccion.toCharArray()){
-            if( car.equals('&')){
-                this.lamba = true;
-            } else if(Character.isUpperCase(car)){
-                varTemp.add(car);
-            } else {
-                finTemp.add(car);
-            }
+        char[] letritas = produccion.toCharArray();
+        List<Character> letrasTemp = new ArrayList<>();
 
+        for(char letra : letritas){
+            letrasTemp.add(letra);
         }
+        Character[] letras = letrasTemp.toArray( new Character[letrasTemp.size()]);
+
+        for(int i = 0; i < letras.length ; i++){
+            if( letras[i].equals('&')){
+                this.lamba = true;
+            } else if(Character.isUpperCase(letras[i])){
+                varTemp.add(letras[i]);
+
+            } else {
+                finTemp.add(letras[i]);
+            }
+        }
+
 
         // Una vez terminado convertir la lista a un array y poner en finales y variables
         this.finales = new Character[finTemp.size()];
