@@ -46,17 +46,7 @@ public class Transicion {
 
     }
 
-    public void setFinales(Character[] finales) {
-        this.finales = finales;
-    }
 
-    public void setProduccion(String produccion) {
-        this.produccion = produccion;
-    }
-
-    public void setVariables(Character[] variables) {
-        this.variables = variables;
-    }
 
     public Character[] getFinales() {
         return finales;
@@ -73,8 +63,5 @@ public class Transicion {
         return lamba;
     }
 
-    public void setLamba(Boolean lamba) {
-        this.lamba = lamba;
-    }
 
 }

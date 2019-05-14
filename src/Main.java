@@ -1,7 +1,4 @@
-import javax.sound.midi.Soundbank;
-import javax.swing.table.TableRowSorter;
 import java.io.FileNotFoundException;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.io.File;
 
@@ -44,6 +41,8 @@ public class Main {
         }
         //Finaliza el while para crear la gramatica
 
+        System.out.println("Gramatica original:");
+
         imprimirGramatica(gramatica);
 
 
@@ -67,7 +66,7 @@ public class Main {
             gramatica.put("S'", new Regla("S'", arrTemp));
             simboloInicial = "S'";
         }
-        System.out.println();
+        System.out.println("Gramatica sin Recursion Inicial:");
 
         imprimirGramatica(gramatica);
 
@@ -178,7 +177,7 @@ public class Main {
         }
 
 
-
+        System.out.println("Gramatica sin reglas lambda:");
         imprimirGramatica(gramatica);
 
         ///Eliminar reglas encadenadas
@@ -240,6 +239,8 @@ public class Main {
             gramatica.put(key, new Regla(key, nuevasTrans.toArray(new String[nuevasTrans.size()]) ));
 
         }
+
+        System.out.println("Gramatica sin reglas encadenadas:");
 
 
         imprimirGramatica(gramatica);
@@ -316,6 +317,8 @@ public class Main {
             }
         }
 
+        System.out.println("Gramatica sin reglas Useless (1/2):");
+
         imprimirGramatica(gramatica);
 
 
@@ -361,6 +364,8 @@ public class Main {
 
             gramatica.put(keyBuena, new Regla(keyBuena, produccionesTemp.toArray(new String[produccionesTemp.size()])));
         }
+
+        System.out.println("Gramatica sin simbolos useless(2/2):");
 
         imprimirGramatica(gramatica);
 
@@ -445,6 +450,8 @@ public class Main {
             gramatica.put(key, new Regla(key, produccionesBuenas.toArray(new String[produccionesBuenas.size()])));
 
         }
+
+        System.out.println("Gramatica en Forma Chomsky (1/2)");
 
         imprimirGramatica(gramatica);
 
@@ -546,7 +553,7 @@ public class Main {
 
 
 
-        System.out.println();
+        System.out.println("Gramatica en Forma Normal de Chomsky (2/2):");
         imprimirGramatica(gramatica);
 
 
